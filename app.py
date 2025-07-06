@@ -27,12 +27,12 @@ if uploaded_file:
     total_pages = len(pdf_doc)
 
     # Xử lý nút Prev / Next
-    col_nav1, col_nav2 = st.columns([1, 1])
-    with col_nav1:
+    col_nav = st.columns([1, 1])
+    with col_nav[0]:
         if st.button("⬅️ Prev page"):
             if st.session_state.page_number > 1:
                 st.session_state.page_number -= 1
-    with col_nav2:
+    with col_nav[1]:
         if st.button("Next page ➡️"):
             if st.session_state.page_number < total_pages:
                 st.session_state.page_number += 1
@@ -45,9 +45,20 @@ if uploaded_file:
 
     col1, col2 = st.columns(2)
 
+    # Style CSS cho box
+    box_style = """
+        border: 1px solid #a3c4f3;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #f9fbff;
+        font-size: 15pt;
+        line-height: 1.6;
+        overflow-x: auto;
+    """
+
     with col1:
         st.markdown(f"**📄 Trang {page_number} / {total_pages}**")
-        st.markdown("<div style='font-size:20pt; line-height:2.0;'>" + html_text + "</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='{box_style}'>{html_text}</div>", unsafe_allow_html=True)
 
     with col2:
         st.markdown(f"**🌐 Bản dịch tiếng Việt (Trang {page_number}):**")
@@ -55,7 +66,8 @@ if uploaded_file:
             with st.spinner("⏳ Đang dịch bằng Google Translate..."):
                 try:
                     translated = GoogleTranslator(source='en', target='vi').translate(text_plain)
-                    st.markdown(f"<div style='font-size:20pt; line-height:2.0;'>{translated}</div>", unsafe_allow_html=True)
+                    translated_html = translated.replace("\n", "<br>")
+                    st.markdown(f"<div style='{box_style}'>{translated_html}</div>", unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"Lỗi khi dịch: {e}")
         else:

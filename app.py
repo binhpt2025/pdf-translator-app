@@ -47,7 +47,7 @@ if uploaded_file:
 
     with col1:
         st.markdown(f"**📄 Trang {page_number} / {total_pages}**")
-        st.markdown("<div style='font-size:10pt; line-height:1.5;'>" + html_text + "</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:20pt; line-height:2.0;'>" + html_text + "</div>", unsafe_allow_html=True)
 
     with col2:
         st.markdown(f"**🌐 Bản dịch tiếng Việt (Trang {page_number}):**")
@@ -55,7 +55,7 @@ if uploaded_file:
             with st.spinner("⏳ Đang dịch bằng Google Translate..."):
                 try:
                     translated = GoogleTranslator(source='en', target='vi').translate(text_plain)
-                    st.markdown(f"<div style='font-size:10pt; line-height:1.5;'>{translated}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='font-size:20pt; line-height:2.0;'>{translated}</div>", unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"Lỗi khi dịch: {e}")
         else:

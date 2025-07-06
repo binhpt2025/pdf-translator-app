@@ -56,7 +56,7 @@ if uploaded_file:
         border-radius: 10px;
         padding: 10px;
         background-color: #f9fbff;
-        font-size: 10pt;
+        font-size: 14pt;
         line-height: 1.6;
         overflow-x: auto;
     """

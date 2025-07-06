@@ -16,29 +16,46 @@ from deep_translator import GoogleTranslator
 st.set_page_config(page_title="PDF Translator (EN→VI)", layout="wide")
 st.title("📘 Dịch tài liệu PDF từ tiếng Anh sang tiếng Việt")
 
+# Khởi tạo trạng thái trang
+if "page_number" not in st.session_state:
+    st.session_state.page_number = 1
+
 uploaded_file = st.file_uploader("Tải lên file PDF tiếng Anh:", type="pdf")
 
 if uploaded_file:
     pdf_doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
     total_pages = len(pdf_doc)
 
-    page_number = st.number_input("Chọn trang để đọc và dịch:", min_value=1, max_value=total_pages, value=1)
+    # Xử lý nút Prev / Next
+    col_nav1, col_nav2 = st.columns([1, 1])
+    with col_nav1:
+        if st.button("⬅️ Prev page"):
+            if st.session_state.page_number > 1:
+                st.session_state.page_number -= 1
+    with col_nav2:
+        if st.button("Next page ➡️"):
+            if st.session_state.page_number < total_pages:
+                st.session_state.page_number += 1
+
+    # Lấy nội dung trang hiện tại
+    page_number = st.session_state.page_number
     page = pdf_doc[page_number - 1]
-    text_en = page.get_text()
+    html_text = page.get_text("html")
+    text_plain = page.get_text()
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("**📄 Nội dung gốc (EN):**")
-        st.text_area("", value=text_en, height=500, key="en_text", label_visibility="collapsed")
+        st.markdown(f"**📄 Trang {page_number} / {total_pages}**")
+        st.markdown("<div style='font-size:10pt; line-height:1.5;'>" + html_text + "</div>", unsafe_allow_html=True)
 
     with col2:
-        st.markdown("**🌐 Bản dịch tiếng Việt (Google Translate):**")
-        if text_en.strip() != "":
+        st.markdown(f"**🌐 Bản dịch tiếng Việt (Trang {page_number}):**")
+        if text_plain.strip() != "":
             with st.spinner("⏳ Đang dịch bằng Google Translate..."):
                 try:
-                    translated = GoogleTranslator(source='en', target='vi').translate(text_en)
-                    st.text_area("", value=translated, height=500, key="vi_text", label_visibility="collapsed")
+                    translated = GoogleTranslator(source='en', target='vi').translate(text_plain)
+                    st.markdown(f"<div style='font-size:10pt; line-height:1.5;'>{translated}</div>", unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"Lỗi khi dịch: {e}")
         else:
